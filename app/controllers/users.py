@@ -6,6 +6,7 @@ from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
 from fastapi.responses import HTMLResponse
 from jwt import ExpiredSignatureError
+from app.constants import VERIFICATION_EMAIL_SUBJECT, EXPIRED_VERIFICATION_EMAIL_HTML, SUCCESS_VERIFICATION_EMAIL_HTML
 from app.entities.status import SuccessResponse
 
 from app.jwt_dependency import get_current_user
@@ -22,34 +23,6 @@ from app.exceptions.api import APIException
 from app.utils.logging import logger
 
 router: APIRouter = APIRouter()
-
-VERIFICATION_EMAIL_SUBJECT = """
-Hello,
-Please click on this link {link} to verify your email address. This link will expire in a day.
-Regards,
-"""
-
-EXPIRED_VERIFICATION_EMAIL_HTML = """
-<html>
-    <head>
-        <title>Verify Email</title>
-    </head>
-    <body>
-        <h2>This email verification link has expired. Please generate a new verification link.</h2>
-    </body>
-</html>
-"""
-
-SUCCESS_VERIFICATION_EMAIL_HTML = """
-<html>
-    <head>
-        <title>Verify Email</title>
-    </head>
-    <body>
-        <h3>Your email has been successfully verified.</h3>
-    </body>
-</html>
-"""
 
 
 @router.get(path="",
