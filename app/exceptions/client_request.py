@@ -13,3 +13,9 @@ class UserUnauthorizedException(Exception):
 
     def __init__(self, message: str):
         super(UserUnauthorizedException, self).__init__(message)
+
+
+class ResourceConflictException(Exception):
+
+    def __init__(self, message: str):
+        super(ResourceConflictException, self).__init__(message)

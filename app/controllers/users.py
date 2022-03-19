@@ -1,5 +1,6 @@
 import json
 import traceback
+from asyncpg import UniqueViolationError
 
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
@@ -8,7 +9,7 @@ from app.entities.status import SuccessResponse
 from app.jwt_dependency import get_current_user
 from app.entities.users import *
 from app.entities.errors import ClientError, APIError
-from app.exceptions.client_request import UserUnauthorizedException
+from app.exceptions.client_request import ResourceConflictException, UserUnauthorizedException
 from app.models.users import User
 
 from app.services.users import UserService
@@ -82,6 +83,9 @@ async def signup(signup_input: SignupInput):
         user: User = await UserService().create_new_user(signup_input)
         logger.info(f"User successfully signed up")
         return user
+    except UniqueViolationError as e:
+        logger.exception(f"UniqueViolationError occurred while creating new user: {signup_input.dict()}")
+        raise ResourceConflictException(f"User with email: {signup_input.email} already exists. Error: {e}")
     except Exception:
         raise APIException(trace=traceback.format_exc(), body=signup_input.json())
 
