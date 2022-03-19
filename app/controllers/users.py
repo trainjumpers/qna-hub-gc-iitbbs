@@ -16,8 +16,6 @@ from app.utils.logging import logger
 from app.utils.password import verify_password
 
 from app.jwt_dependency import get_current_user
-from app.entities.errors import ClientError, APIError
-from app.models.users import User
 
 router: APIRouter = APIRouter()
 
