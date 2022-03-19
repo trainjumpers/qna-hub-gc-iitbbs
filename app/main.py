@@ -13,16 +13,18 @@ from app.exceptions.api_exception import APIException
 from app.utils.logging import logger
 
 from database import DatabaseConnectionPool
+from routes import router
 
 app = FastAPI(title="GC Hackathon", version="1.0.0")
 
+app.include_router(router, prefix="/api")
+app.add_middleware(CORSMiddleware,
+                   allow_origins=["localhost:3000"],
+                   allow_credentials=True,
+                   allow_methods=["*"],
+                   allow_headers=["*"])
 
-@app.get("/")
-@app.add_middleware(CORSMiddleware,
-                    allow_origins=["localhost:3000"],
-                    allow_credentials=True,
-                    allow_methods=["*"],
-                    allow_headers=["*"])
+
 @app.on_event('startup')
 async def init():
     logger.info("Performing init tasks")
@@ -38,6 +40,7 @@ async def finalise():
     logger.info("Closed database connection pool")
 
 
+@app.get("/")
 async def root():
     return {
         "message": "Welcome to our discussion forum meant for GC Hackathon participants and a few special creatures"
