@@ -22,6 +22,23 @@ async def drop_all_tables(connection):
     await connection.execute(query)
 
 
+async def create_question_table(connection):
+    query = f"""CREATE TABLE {schema_name}.question (
+        id              SERIAL PRIMARY KEY,
+        body            VARCHAR(64) NULL,
+	    created_by      VARCHAR(64) NULL,
+	    answer          JSON NULL,
+        created_at      TIMESTAMP NOT NULL DEFAULT now(),
+        is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
+	    upvotes         BIGINT 0,
+	    downvotes       BIGINT 0
+    );"""
+
+    print(f"Executing query: {query}")
+    result = await connection.execute(query)
+    print("Result", result)
+
+
 async def create_user_table(connection):
     query = f"""CREATE TABLE {schema_name}.user (
         id              SERIAL PRIMARY KEY,
@@ -61,9 +78,9 @@ async def rebuild_schema():
 
     print(f"Recreating all tables in schema: {schema_name}")
     await create_user_table(connection)
+    await create_question_table(connection)
 
     await connection.close()
-
 
 
 load_dotenv()

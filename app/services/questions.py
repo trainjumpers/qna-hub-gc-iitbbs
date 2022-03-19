@@ -19,7 +19,7 @@ class QuestionService:
         self.pool: Pool = DatabaseConnectionPool.get_connection_pool()
         self.schema: str = os.environ.get('DB_SCHEMA')
 
-    async def create_new_question(self, question_input: QuestionInput) -> Question:
+    async def create_new_question(self, question_input: list[QuestionInput]) -> Question:
         """Creates a new question in the database.
 
         Args:
@@ -34,7 +34,7 @@ class QuestionService:
         params: Tuple[str, str] = (question_input.body,question_input.created_by)
         async with self.pool.acquire() as connection:
             async with connection.transaction():
-                logger.info(f"Acquired connection and opened transaction to insert new user via query: {query}")
+                logger.info(f"Acquired connection and opened transaction to insert new question via query: {query}")
                 question_record: Record = await connection.fetchrow(query, *params)
 
         logger.info(f"Question: {question_input.json()} successfully inserted in the db")
@@ -48,6 +48,18 @@ class QuestionService:
             async with connection.transaction():
                 logger.info(f"Acquired connection and opened transaction to fetch all questions via query: {query}")
                 question_record: Optional[Record] = await connection.fetch(query)
+
+        
+        return question_record
+    async def fetch_user_question(self,email:str) -> List[Question]:
+        
+
+        query = f"SELECT * FROM {self.schema}.question where created_by=$1"
+
+        async with self.pool.acquire() as connection:
+            async with connection.transaction():
+                logger.info(f"Acquired connection and opened transaction to fetch user questions via query: {query}")
+                question_record: Optional[Record] = await connection.fetch(query,email)
 
         
         return question_record

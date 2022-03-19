@@ -3,10 +3,10 @@ import traceback
 
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
-
-from app.jwt_dependency import get_current_user,get_all_question
-from app.jwt_dependency import get_current_question
+from app.Question_dependency import get_all_question,get_user_question
+from app.jwt_dependency import get_current_user
 from app.entities.users import *
+from app.entities.questions import QuestionInput
 from app.entities.errors import ClientError, APIError
 from app.exceptions.client_request import UserUnauthorizedException
 from app.models.users import User
@@ -19,6 +19,8 @@ from app.exceptions.api import APIException
 from app.utils.logging import logger
 
 router: APIRouter = APIRouter()
+
+
 @router.get(path="/AllQuestion",
             description="Fetch all the current questions",
             status_code=status.HTTP_200_OK,
@@ -34,10 +36,12 @@ router: APIRouter = APIRouter()
                     "model": APIError
                 }
             })
-async def get_all_questions(question: Question = Depends(get_all_question)):
+async def get_all_questions(question: list[Question] = Depends(get_all_question)):
     return question
+
+
 @router.get(path="/UserQuestion",
-            description="Fetch all the current questions",
+            description="Fetch all the user's current questions",
             status_code=status.HTTP_200_OK,
             response_model=Question,
             responses={
@@ -51,8 +55,10 @@ async def get_all_questions(question: Question = Depends(get_all_question)):
                     "model": APIError
                 }
             })
-async def get_question(question: Ques):
+async def get_question(question: list[Question] = Depends(get_user_question)):
     return question
+
+
 @router.post(path="/Question",
              description="Post a question",
              status_code=status.HTTP_201_CREATED,
@@ -60,7 +66,7 @@ async def get_question(question: Ques):
              responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
                  "model": APIError
              }})
-async def ask(question_input: QuestionInput):
+async def ask(question_input: list[QuestionInput]):
     logger.info(f"Received question request with payload: {question_input.json()}")
     try:
         question: Question = await QuestionService().create_new_question(question_input)
