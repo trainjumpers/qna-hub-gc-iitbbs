@@ -34,3 +34,17 @@ class LoginInput(BaseModel):
 class LoginOutput(BaseModel):
     access_token: str = Field(..., description="Authentication token to associate with the user for all the APIs")
     token_type: str = Field(..., description="Type of the authentication token")
+
+
+class SignupInput(LoginInput):
+    name: str = Field(..., description="Name of the user signing up")
+
+    @validator("name")
+    def validate_name(cls, name: str):
+        name = name.strip()
+        if not name:
+            raise ValueError(f"Name is empty")
+        return name
+
+    def json(self, *args, **kwargs):  # overriding parent json() method to exclude password in the serialised object
+        return super(SignupInput, self).json(exclude={"password"})

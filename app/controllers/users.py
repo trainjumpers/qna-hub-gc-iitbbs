@@ -6,7 +6,7 @@ from fastapi import APIRouter, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
 from app.entities.errors import ClientError, APIError
-from app.entities.users import LoginOutput
+from app.entities.users import LoginOutput, SignupInput
 from app.exceptions.api import APIException
 from app.exceptions.client_request import UserUnauthorizedException
 from app.models.users import User
@@ -68,3 +68,21 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     except Exception:
         data = {"email": form_data.username}
         raise APIException(trace=traceback.format_exc(), body=json.dumps(data))
+
+
+@router.post(path="/signup",
+             description="Register a user",
+             status_code=status.HTTP_201_CREATED,
+             response_model=User,
+             response_model_exclude={'hashed_password'},
+             responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                 "model": APIError
+             }})
+async def signup(signup_input: SignupInput):
+    logger.info(f"Received signup request with payload: {signup_input.json()}")
+    try:
+        user: User = await UserService().create_new_user(signup_input)
+        logger.info(f"User successfully signed up")
+        return user
+    except Exception:
+        raise APIException(trace=traceback.format_exc(), body=signup_input.json())
