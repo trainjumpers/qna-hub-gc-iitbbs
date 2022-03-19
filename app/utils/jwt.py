@@ -23,7 +23,7 @@ def jwt_encode_user_to_token(user: User) -> str:
 
     expiration_time: datetime = datetime.now() + timedelta(days=1)
     data: Dict[str, Union[str, int]] = {"id": user.id, "email": user.email, "exp": expiration_time}
-    secret_key = os.environ.get("ENCODING_KEY")
+    secret_key ='secretkey'
     return jwt.encode(data, secret_key, algorithm="HS256")
 
 

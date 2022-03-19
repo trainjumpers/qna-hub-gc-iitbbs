@@ -65,11 +65,11 @@ async def rebuild_schema():
     await connection.close()
 
 
-if __name__ == '__main__':
-    load_dotenv()
 
-    host_name = os.environ.get('DB_HOST')
-    db_name = os.environ.get('DB_NAME')
-    schema_name = os.environ.get('DB_SCHEMA')
+load_dotenv()
 
-    asyncio.get_event_loop().run_until_complete(rebuild_schema())
+host_name = os.environ.get('DB_HOST')
+db_name = os.environ.get('DB_NAME')
+schema_name = os.environ.get('DB_SCHEMA')
+
+asyncio.get_event_loop().run_until_complete(rebuild_schema())

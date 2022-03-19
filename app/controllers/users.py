@@ -57,6 +57,7 @@ async def get_user(user: User = Depends(get_current_user)):
 async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     logger.info(f"Received login request for user: {form_data.username}")
     user: User = await UserService().fetch_user(form_data.username)
+    print(type(user))
     if not verify_password(form_data.password, user.hashed_password):
         raise UserUnauthorizedException("Invalid credentials")
     try:

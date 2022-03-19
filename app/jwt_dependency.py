@@ -6,12 +6,14 @@ from jwt import ExpiredSignatureError
 
 from app.exceptions.client_request import UserUnauthorizedException
 from app.models.users import User
+from app.models.users import Question
+
 from app.services.users import UserService
+from app.services.questions import QuestionService
 from app.utils.jwt import jwt_decode_token_to_user
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/accounts/login")
-
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users")
+print(oauth2_scheme)
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
     """Used to authenticate a user via the bearer token.
 
@@ -30,3 +32,7 @@ async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
         return await UserService().fetch_user(email=user_dict['email'])
     except ExpiredSignatureError:
         raise UserUnauthorizedException("Authentication token has expired")
+async def get_all_question() -> list[Question]:
+   
+    return await QuestionService().fetch_all_question()
+    

@@ -37,6 +37,13 @@ class LoginOutput(BaseModel):
 
 
 class SignupInput(LoginInput):
-
+   
     def json(self, *args, **kwargs):  # overriding parent json() method to exclude password in the serialised object
-        return super(SignupInput, self).json(exclude={"password"})
+        return super(SignupInput, self).json()
+class QuestionInput(BaseModel):
+    body: str = Field(..., description="question of the user")
+    created_by:str=Field(...,description="user of the question")
+    def json(self, *args, **kwargs):
+        return super(QuestionInput,self).json()
+        
+    
