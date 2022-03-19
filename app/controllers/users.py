@@ -4,6 +4,8 @@ from asyncpg import UniqueViolationError
 
 from fastapi import APIRouter, Depends, status
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.responses import HTMLResponse
+from jwt import ExpiredSignatureError
 from app.entities.status import SuccessResponse
 
 from app.jwt_dependency import get_current_user
@@ -25,6 +27,28 @@ VERIFICATION_EMAIL_SUBJECT = """
 Hello,
 Please click on this link {link} to verify your email address. This link will expire in a day.
 Regards,
+"""
+
+EXPIRED_VERIFICATION_EMAIL_HTML = """
+<html>
+    <head>
+        <title>Verify Email</title>
+    </head>
+    <body>
+        <h2>This email verification link has expired. Please generate a new verification link.</h2>
+    </body>
+</html>
+"""
+
+SUCCESS_VERIFICATION_EMAIL_HTML = """
+<html>
+    <head>
+        <title>Verify Email</title>
+    </head>
+    <body>
+        <h3>Your email has been successfully verified.</h3>
+    </body>
+</html>
 """
 
 
@@ -194,5 +218,36 @@ async def verify_email(verify_email_input: VerifyEmailInput):
         message = VERIFICATION_EMAIL_SUBJECT.format(link=verification_url)
         send_email(verify_email_input.email, VERIFICATION_EMAIL_SUBJECT, message)
         return SuccessResponse(message=f"Successfully sent verification email to user: {verify_email_input.email}")
+    except Exception:
+        raise APIException(trace=traceback.format_exc())
+
+
+@router.get(path="/verify_email/{encoded_email}",
+            description="Verifies the email of a user",
+            status_code=status.HTTP_200_OK,
+            response_class=HTMLResponse,
+            responses={
+                status.HTTP_404_NOT_FOUND: {
+                    "model": ClientError
+                },
+                status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                    "model": APIError
+                }
+            })
+async def verify_email(encoded_email: str):
+    logger.info(f"Received request to verify email: {encoded_email} (encoded)")
+    try:
+        data: dict = jwt_encode_user_to_token(encoded_email)
+    except ExpiredSignatureError:
+        return EXPIRED_VERIFICATION_EMAIL_HTML
+
+    user_service: UserService = UserService()
+    user: User = await user_service.fetch_user_by_email(data["email"])
+    if user.is_verified:
+        return SUCCESS_VERIFICATION_EMAIL_HTML
+
+    try:
+        await user_service.update_fields(user.id, {"is_verified": True})
+        return SUCCESS_VERIFICATION_EMAIL_HTML
     except Exception:
         raise APIException(trace=traceback.format_exc())
