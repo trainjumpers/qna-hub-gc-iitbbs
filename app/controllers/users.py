@@ -142,3 +142,23 @@ async def update_password(patch_password_input: PatchUserPasswordInput, user: Us
         return SuccessResponse(message=f"Password was successfully updated for user: {user.id}")
     except Exception:
         raise APIException(trace=traceback.format_exc())
+
+
+@router.delete(path="/deactivate",
+               description="Deactivate a user account",
+               status_code=status.HTTP_204_NO_CONTENT,
+               responses={
+                   status.HTTP_401_UNAUTHORIZED: {
+                       "model": ClientError
+                   },
+                   status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                       "model": APIError
+                   }
+               })
+async def deactivate_account(user: User = Depends(get_user)):
+    logger.info(f"Received request to deactivate account of user: {user.id}")
+
+    try:
+        await UserService().update_fields(user.id, {"is_active": False})
+    except Exception:
+        raise APIException(trace=traceback.format_exc())
