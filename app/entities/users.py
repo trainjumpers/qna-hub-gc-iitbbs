@@ -49,7 +49,6 @@ class PatchUserInput(BaseModel):
     name: str = Field(None, description='Name of the user')
     is_verified: bool = Field(None, description="Whether the user is verified or not")
     is_blacklisted: bool = Field(None, description="Whether the user is blacklisted or not")
-    is_active: bool = Field(None, description="Whether the user is active or not")
 
 
 class PatchUserPasswordInput(BaseModel):
