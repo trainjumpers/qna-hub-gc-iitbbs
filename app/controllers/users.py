@@ -13,12 +13,19 @@ from app.exceptions.client_request import ResourceConflictException, UserUnautho
 from app.models.users import User
 
 from app.services.users import UserService
+from app.utils.emails import generate_email_verification_url, send_email
 from app.utils.jwt import jwt_encode_user_to_token
 from app.utils.password import get_password_hash, verify_password
 from app.exceptions.api import APIException
 from app.utils.logging import logger
 
 router: APIRouter = APIRouter()
+
+VERIFICATION_EMAIL_SUBJECT = """
+Hello,
+Please click on this link {link} to verify your email address. This link will expire in a day.
+Regards,
+"""
 
 
 @router.get(path="",
@@ -164,5 +171,28 @@ async def deactivate_account(user: User = Depends(get_user)):
 
     try:
         await UserService().update_fields(user.id, {"is_active": False})
+    except Exception:
+        raise APIException(trace=traceback.format_exc())
+
+
+@router.post(path="/verify_email",
+             description="Sends an email for account verification",
+             status_code=status.HTTP_200_OK,
+             response_model=SuccessResponse,
+             responses={
+                 status.HTTP_404_NOT_FOUND: {
+                     "model": ClientError
+                 },
+                 status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                     "model": APIError
+                 }
+             })
+async def verify_email(verify_email_input: VerifyEmailInput):
+    logger.info(f"Received request to generate verification email for user: {verify_email_input.email}")
+    try:
+        verification_url = generate_email_verification_url(verify_email_input.email)
+        message = VERIFICATION_EMAIL_SUBJECT.format(link=verification_url)
+        send_email(verify_email_input.email, VERIFICATION_EMAIL_SUBJECT, message)
+        return SuccessResponse(message=f"Successfully sent verification email to user: {verify_email_input.email}")
     except Exception:
         raise APIException(trace=traceback.format_exc())

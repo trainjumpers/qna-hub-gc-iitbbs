@@ -66,3 +66,8 @@ class PatchUserPasswordInput(BaseModel):
             special_characters = '!@#$%&*-+(){}_'
             raise ValueError(f"Password should be alphanumeric and contain only one of {special_characters}")
         return password
+
+
+class VerifyEmailInput(BaseModel):
+    email: str = Field(
+        ..., description="Email ID of the user signing in")  # used for sendind the verification emails/reset password
