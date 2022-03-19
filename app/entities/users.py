@@ -16,7 +16,7 @@ class LoginInput(BaseModel):
             raise ValueError("Email is empty")
         if not re.match(EMAIL_REGEX, email):
             raise ValueError(f"Email: {email} is not a valid email address")
-        return email
+        return email  # return a validated value
 
     @validator("password")
     def validate_password(cls, password: str):
@@ -37,14 +37,6 @@ class LoginOutput(BaseModel):
 
 
 class SignupInput(LoginInput):
-    name: str = Field(..., description="Name of the user signing up")
 
-    @validator("name")
-    def validate_name(cls, name: str):
-        name = name.strip()
-        if not name:
-            raise ValueError(f"Name is empty")
-        return name
-
-    def json(self, *args, **kwargs):  # overriding parent json() method to exclude password in the serialised object
-        return super(SignupInput, self).json(exclude={"password"})
+    def dict(self, *args, **kwargs):  # overriding parent dict() method to exclude password in the serialised object
+        return super(SignupInput, self).dict(exclude={"password"})

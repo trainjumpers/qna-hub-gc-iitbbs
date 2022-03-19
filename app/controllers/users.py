@@ -69,18 +69,24 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
 
 
 @router.post(path="/signup",
-             description="Register a user",
+             description="Register a new user",
              status_code=status.HTTP_201_CREATED,
              response_model=User,
              response_model_exclude={'hashed_password'},
-             responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
-                 "model": APIError
-             }})
+             responses={
+                 status.HTTP_409_CONFLICT: {
+                     "model": ClientError
+                 },
+                 status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                     "model": APIError
+                 }
+             })
 async def signup(signup_input: SignupInput):
-    logger.info(f"Received signup request with payload: {signup_input.json()}")
+    logger.info(f"Received signup request with payload: {signup_input.email}")
+    return
     try:
         user: User = await UserService().create_new_user(signup_input)
         logger.info(f"User successfully signed up")
         return user
     except Exception:
-        raise APIException(trace=traceback.format_exc(), body=signup_input.json())
+        raise APIException(trace=traceback.format_exc(), body=signup_input.dict())
