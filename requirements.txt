@@ -1,0 +1,7 @@
+fastapi
+pytest
+uvicorn[standard]
+gunicorn
+pydantic
+asyncpg
+
