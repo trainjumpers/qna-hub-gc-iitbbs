@@ -12,8 +12,8 @@ from app.exceptions.api_exception import APIException
 
 from app.utils.logging import logger
 
-from database import DatabaseConnectionPool
-from routes import router
+from .database import DatabaseConnectionPool
+from .routes import router
 
 app = FastAPI(title="GC Hackathon", version="1.0.0")
 
