@@ -66,7 +66,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     if not verify_password(form_data.password, user.hashed_password):
         raise UserUnauthorizedException("Invalid credentials")
     try:
-        auth_token: str = jwt_encode_user_to_token(user)
+        auth_token: str = jwt_encode_user_to_token({"email": user.email})
         return LoginOutput(access_token=auth_token, token_type="bearer")
     except Exception:
         data = {"email": form_data.username}
