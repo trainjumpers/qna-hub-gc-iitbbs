@@ -4,4 +4,10 @@ uvicorn[standard]
 gunicorn
 pydantic
 asyncpg
-
+python-dotenv
+pyjwt
+passlib[bcrypt]
+python-multipart
+httpx
+requests
+deepdiff
