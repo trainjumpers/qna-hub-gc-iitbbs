@@ -2,7 +2,7 @@
 
 ---
 
-- python 3.8+
+- python 3.10+
   - pip3
   - virtualenv
 - Visual Studio Code
