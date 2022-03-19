@@ -9,7 +9,7 @@ from app.models.users import User
 from app.services.users import UserService
 from app.utils.jwt import jwt_decode_token_to_user
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/accounts/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/accounts/login")
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
