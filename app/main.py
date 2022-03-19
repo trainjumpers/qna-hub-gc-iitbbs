@@ -7,8 +7,8 @@ from fastapi.responses import JSONResponse
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi import status
 
-from app.exceptions.client_request_exception import ResourceNotFoundException, UserUnauthorizedException
-from app.exceptions.api_exception import APIException
+from app.exceptions.client_request import ResourceNotFoundException, UserUnauthorizedException
+from app.exceptions.api import APIException
 
 from app.utils.logging import logger
 
