@@ -6,8 +6,8 @@ from app.constants import EMAIL_REGEX, PASSWORD_REGEX
 
 
 class LoginInput(BaseModel):
-    email: str = Field(..., description="Email ID of the user signing in")
-    password: str = Field(..., description="Text password of the user signing in")
+    email: str = Field(..., description="Email ID of the user signing in to the platform")
+    password: str = Field(..., description="Text password of the user signing in to the platform")
 
     @validator("email")
     def validate_email(cls, email: str):
@@ -38,5 +38,5 @@ class LoginOutput(BaseModel):
 
 class SignupInput(LoginInput):
 
-    def dict(self, *args, **kwargs):  # overriding parent dict() method to exclude password in the serialised object
-        return super(SignupInput, self).dict(exclude={"password"})
+    def json(self, *args, **kwargs):  # overriding parent json() method to exclude password in the serialised object
+        return super(SignupInput, self).json(exclude={"password"})

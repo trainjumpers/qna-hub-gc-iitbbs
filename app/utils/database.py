@@ -7,12 +7,13 @@ T = TypeVar("T")
 
 def deserialize_records(results: Union[Record, List[Record]], dataclass: Type[T]) -> Union[T, List[T]]:
     """Deserializes one or a list of database records into objects of the provided class type.
-    Helps to convert data from psql db to python objects.
+
+    if a single record is provided, the returned value is a single class object.
+    If a list of records is provided, the returned value is a list of class objects.
+
     Args:
         results: one or more database records
         dataclass: class into which the records are to be deserialized
-    returns:
-        one or a list of objects of the provided class type
     """
 
     def parse_record(entry: Record):

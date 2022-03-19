@@ -9,17 +9,18 @@ from app.models.users import User
 from app.services.users import UserService
 from app.utils.jwt import jwt_decode_token_to_user
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/accounts/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/accounts/login")
 
 
 async def get_current_user(token: str = Depends(oauth2_scheme)) -> User:
-    """Bean used to authenticate a user via the bearer token.
-    Validates the token by checking the expiration time and if it is valid fetches the user
-    using the email id from the decoded token object.
+    """Used to authenticate a user via the bearer token.
+
     Args:
         token: string encoded jwt token generated on user login.
+
     Returns:
         user: pydantic model object of the user. See app.models.user.User.
+
     Raises:
         UserUnauthorizedException: when the user token has expired causing failure to decode the token.
     """

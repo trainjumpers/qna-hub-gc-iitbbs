@@ -2,20 +2,19 @@ import json
 import traceback
 
 from fastapi import APIRouter, Depends, status
-from fastapi import APIRouter, status, Depends
 from fastapi.security import OAuth2PasswordRequestForm
 
+from app.jwt_dependency import get_current_user
+from app.entities.users import *
 from app.entities.errors import ClientError, APIError
-from app.entities.users import LoginOutput, SignupInput
-from app.exceptions.api import APIException
 from app.exceptions.client_request import UserUnauthorizedException
 from app.models.users import User
+
 from app.services.users import UserService
 from app.utils.jwt import jwt_encode_user_to_token
-from app.utils.logging import logger
 from app.utils.password import verify_password
-
-from app.jwt_dependency import get_current_user
+from app.exceptions.api import APIException
+from app.utils.logging import logger
 
 router: APIRouter = APIRouter()
 
@@ -59,7 +58,7 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
     logger.info(f"Received login request for user: {form_data.username}")
     user: User = await UserService().fetch_user(form_data.username)
     if not verify_password(form_data.password, user.hashed_password):
-        raise UserUnauthorizedException("Invalid creds")
+        raise UserUnauthorizedException("Invalid credentials")
     try:
         auth_token: str = jwt_encode_user_to_token(user)
         return LoginOutput(access_token=auth_token, token_type="bearer")
@@ -73,20 +72,14 @@ async def login(form_data: OAuth2PasswordRequestForm = Depends()):
              status_code=status.HTTP_201_CREATED,
              response_model=User,
              response_model_exclude={'hashed_password'},
-             responses={
-                 status.HTTP_409_CONFLICT: {
-                     "model": ClientError
-                 },
-                 status.HTTP_500_INTERNAL_SERVER_ERROR: {
-                     "model": APIError
-                 }
-             })
+             responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                 "model": APIError
+             }})
 async def signup(signup_input: SignupInput):
-    logger.info(f"Received signup request with payload: {signup_input.email}")
-    return
+    logger.info(f"Received signup request with payload: {signup_input.json()}")
     try:
         user: User = await UserService().create_new_user(signup_input)
         logger.info(f"User successfully signed up")
         return user
     except Exception:
-        raise APIException(trace=traceback.format_exc(), body=signup_input.dict())
+        raise APIException(trace=traceback.format_exc(), body=signup_input.json())
