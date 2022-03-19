@@ -1,3 +1,4 @@
+from asyncio.log import logger
 import os
 from datetime import datetime, timedelta
 from typing import Dict, Union
@@ -7,7 +8,7 @@ import jwt
 from app.models.users import User
 
 
-def jwt_encode_user_to_token(user: User) -> str:
+def jwt_encode_user_to_token(data: dict) -> str:
     """Encodes the provided user object into a json web token.
 
     Uses the user id and email to generate the token. Password is excluded for obvious security reasons.
@@ -21,8 +22,7 @@ def jwt_encode_user_to_token(user: User) -> str:
         token: encoded string jwt token for the user session.
     """
 
-    expiration_time: datetime = datetime.now() + timedelta(days=1)
-    data: Dict[str, Union[str, int]] = {"id": user.id, "email": user.email, "exp": expiration_time}
+    data["exp"] = datetime.now() + timedelta(days=180)
     secret_key = os.environ.get("ENCODING_KEY")
     return jwt.encode(data, secret_key, algorithm="HS256")
 
