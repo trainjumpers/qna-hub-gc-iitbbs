@@ -6,6 +6,8 @@ import SignUpScreen from "./views/Auth/Signup";
 import VerifyEmailScreen from "./views/Auth/VerifyEmail";
 import HomePage from "./views/Home/HomePage";
 import { Nav, Navbar } from "react-bootstrap";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import "./App.css"
 
@@ -26,7 +28,6 @@ function App() {
                     </Navbar.Brand>
                     <Nav
                         className="justify-content-end"
-                        defaultActiveKey={"/"}
                         variant="pills"
                     >
                         <Nav.Item className="mx-1">
@@ -53,6 +54,7 @@ function App() {
                     ></Route>
                 </Routes>
             </Container>
+            <ToastContainer />
         </div>
     );
 }

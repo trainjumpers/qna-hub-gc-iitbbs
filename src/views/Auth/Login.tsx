@@ -1,10 +1,14 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
+import { handleLogin } from "../../api/auth";
 
 interface LoginScreenProps {}
 
 const LoginScreen: FunctionComponent<LoginScreenProps> = () => {
+const [email, setEmail] = useState<string>("")
+const [password, setPassword] = useState<string>("")
+
     return (
         <Container className="mt-5">
             <Card style={{width: "45rem"}} className="mx-auto">
@@ -18,6 +22,7 @@ const LoginScreen: FunctionComponent<LoginScreenProps> = () => {
                             <Form.Control
                                 type="email"
                                 placeholder="Enter email"
+                                onChange={(e) => setEmail(e.target.value)}
                             />
                         </Form.Group>
                         <Form.Group className="mb-3" controlId="password">
@@ -25,9 +30,13 @@ const LoginScreen: FunctionComponent<LoginScreenProps> = () => {
                             <Form.Control
                                 type="password"
                                 placeholder="Password"
+                                onChange={(e) => setPassword(e.target.value)}
                             />
                         </Form.Group>
-                        <Button variant="primary">
+                        <Button variant="primary" onClick={() => {
+                            console.log(email, password)
+                            handleLogin(email, password)
+                        }}>
                             Login
                         </Button>
                     </Form>
