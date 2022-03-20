@@ -63,7 +63,7 @@ async def get_question(user: User = Depends(get_user)):
                responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
                    "model": APIError
                }})
-async def ask(question_id: int, user: User = Depends(get_user)):
+async def delete_question(question_id: int, user: User = Depends(get_user)):
     logger.info(f"Received question request with question id: {question_id}")
     validator: QuestionValidator = QuestionValidator(question_id)
     asyncio.gather(validator.validate_question_creator(user.id))
@@ -82,10 +82,10 @@ async def ask(question_id: int, user: User = Depends(get_user)):
              responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
                  "model": APIError
              }})
-async def ask(question_input: list[QuestionInput]):
+async def create_question(question_input: QuestionInput, user: User = Depends(get_user)):
     logger.info(f"Received question request with payload: {question_input.json()}")
     try:
-        question: Question = await QuestionService().create_new_question(question_input)
+        question: Question = await QuestionService().create_new_question(question_input, user.email)
         logger.info(f"Question created successfully")
         return question
     except Exception:

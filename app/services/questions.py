@@ -17,7 +17,7 @@ class QuestionService:
         self.pool: Pool = DatabaseConnectionPool.get_connection_pool()
         self.schema: str = os.environ.get('DB_SCHEMA')
 
-    async def create_new_question(self, question_input: list[QuestionInput]) -> Question:
+    async def create_new_question(self, question_input: QuestionInput, email: str) -> Question:
         """Creates a new question in the database.
 
         Args:
@@ -29,7 +29,7 @@ class QuestionService:
 
         logger.info(f"Creating new question: {question_input.json()}")
         query = f"INSERT INTO {self.schema}.question (question) VALUES ($1,$2) RETURNING *;"
-        params: Tuple[str, str] = (question_input.body, question_input.created_by)
+        params: Tuple[str, str] = (question_input.body, email)
         async with self.pool.acquire() as connection:
             async with connection.transaction():
                 logger.info(f"Acquired connection and opened transaction to insert new question via query: {query}")
