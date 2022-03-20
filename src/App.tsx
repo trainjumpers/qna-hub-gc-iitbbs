@@ -1,4 +1,4 @@
-import { Routes, Route, Link } from "react-router-dom";
+import { Routes, Route, Link, NavLink } from "react-router-dom";
 import Container from "react-bootstrap/Container";
 
 import LoginScreen from "./views/Auth/Login";
@@ -6,12 +6,17 @@ import SignUpScreen from "./views/Auth/Signup";
 import VerifyEmailScreen from "./views/Auth/VerifyEmail";
 import HomePage from "./views/Home/HomePage";
 import { Nav, Navbar } from "react-bootstrap";
-import { ToastContainer } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
-import "./App.css"
+import "./App.css";
 
 function App() {
+    const activeStyle = {
+        backgroundColor: "white",
+        color: "black"
+    }
+
     return (
         <div>
             <Navbar bg="dark" variant="dark">
@@ -26,19 +31,28 @@ function App() {
                         />{" "}
                         GC Forums
                     </Navbar.Brand>
-                    <Nav
-                        className="justify-content-end"
-                        variant="pills"
-                    >
+                    <Nav className="justify-content-end" variant="pills">
                         <Nav.Item className="mx-1">
-                            <Nav.Link as={Link} to="/" eventKey="/">
+                            <NavLink
+                                className="navlink"
+                                to="/"
+                                style={({ isActive }) =>
+                                    isActive ? activeStyle : {}
+                                }
+                            >
                                 Home
-                            </Nav.Link>
+                            </NavLink>
                         </Nav.Item>
                         <Nav.Item className="mx-1">
-                            <Nav.Link as={Link} to="/login" eventKey="/login">
+                            <NavLink
+                                className="navlink"
+                                to="/login"
+                                style={({ isActive }) =>
+                                    isActive ? activeStyle : {}
+                                }
+                            >
                                 Login
-                            </Nav.Link>
+                            </NavLink>
                         </Nav.Item>
                     </Nav>
                 </Container>
