@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from typing import List
 
 from fastapi import APIRouter, Depends, status
 from app.controllers.users import get_user
@@ -19,7 +20,7 @@ router: APIRouter = APIRouter()
 @router.get(path="",
             description="Fetch all the questions",
             status_code=status.HTTP_200_OK,
-            response_model=Question,
+            response_model=List[Question],
             responses={
                 status.HTTP_401_UNAUTHORIZED: {
                     "model": ClientError
@@ -32,14 +33,14 @@ router: APIRouter = APIRouter()
                 }
             })
 async def get_all_questions(user: User = Depends(get_user)):
-    questions: list[Question] = await QuestionService().fetch_all_question()
+    questions: List[Question] = await QuestionService().fetch_all_question()
     return questions
 
 
 @router.get(path="/UserQuestion",
             description="Fetch all the questions created by a user",
             status_code=status.HTTP_200_OK,
-            response_model=Question,
+            response_model=List[Question],
             responses={
                 status.HTTP_401_UNAUTHORIZED: {
                     "model": ClientError
@@ -52,7 +53,7 @@ async def get_all_questions(user: User = Depends(get_user)):
                 }
             })
 async def get_question(user: User = Depends(get_user)):
-    questions: list[Question] = await QuestionService().fetch_user_question(user.email)
+    questions: List[Question] = await QuestionService().fetch_user_question(user.email)
     return questions
 
 
