@@ -27,7 +27,24 @@ async def create_question_table(connection):
         id              SERIAL PRIMARY KEY,
         body            VARCHAR(64) NULL,
 	    created_by      VARCHAR(64) NULL,
-	    answer          JSON NULL,
+	    answer          INTEGER[] NOT NULL,
+        created_at      TIMESTAMP NOT NULL DEFAULT now(),
+        is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
+	    upvotes         BIGINT 0,
+	    downvotes       BIGINT 0
+    );"""
+
+    print(f"Executing query: {query}")
+    result = await connection.execute(query)
+    print("Result", result)
+
+
+async def create_reply_table(connection):
+    query = f"""CREATE TABLE {schema_name}.question (
+        id              SERIAL PRIMARY KEY,
+        body            VARCHAR(64) NULL,
+	    created_by      VARCHAR(64) NULL,
+	    question_id     INTEGER NOT NULL,
         created_at      TIMESTAMP NOT NULL DEFAULT now(),
         is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
 	    upvotes         BIGINT 0,
