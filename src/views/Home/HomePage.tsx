@@ -1,11 +1,20 @@
 import { FunctionComponent } from "react";
+import { Button } from "react-bootstrap";
+import { createQuestion } from "../../api/question";
 import CardComponent from "../../components/Card";
 
 interface HomePageProps {}
 
 const HomePage: FunctionComponent<HomePageProps> = () => {
+
+    const handleCreateQuestion = () => {
+        console.log("Create Question");
+        createQuestion("Test Question", "Test Body", "Test User");
+    }
+
     return (
         <div>
+            <Button style={{margin: "10px"}} onClick={handleCreateQuestion}>Create Question</Button>
             <CardComponent
                 title="Question"
                 body="What is the best way to learn React?"
