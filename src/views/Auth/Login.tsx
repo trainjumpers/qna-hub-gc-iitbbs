@@ -2,16 +2,26 @@ import { FunctionComponent, useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { handleLogin } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
 
 interface LoginScreenProps {}
 
 const LoginScreen: FunctionComponent<LoginScreenProps> = () => {
-const [email, setEmail] = useState<string>("")
-const [password, setPassword] = useState<string>("")
+    const [email, setEmail] = useState<string>("");
+    const [password, setPassword] = useState<string>("");
+
+    let navigate = useNavigate();
+
+    const login = async () => {
+        const success = await handleLogin(email, password);
+        console.log(success)
+        if (!success) return;
+        navigate("/");
+    };
 
     return (
         <Container className="mt-5">
-            <Card style={{width: "45rem"}} className="mx-auto">
+            <Card style={{ width: "45rem" }} className="mx-auto">
                 <Card.Header>
                     <Card.Title>Login to your Account</Card.Title>
                 </Card.Header>
@@ -33,10 +43,7 @@ const [password, setPassword] = useState<string>("")
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </Form.Group>
-                        <Button variant="primary" onClick={() => {
-                            console.log(email, password)
-                            handleLogin(email, password)
-                        }}>
+                        <Button variant="primary" onClick={login}>
                             Login
                         </Button>
                     </Form>
