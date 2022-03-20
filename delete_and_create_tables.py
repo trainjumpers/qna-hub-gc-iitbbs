@@ -25,10 +25,10 @@ async def drop_all_tables(connection):
 async def create_question_table(connection):
     query = f"""CREATE TABLE {schema_name}.question (
         id              SERIAL PRIMARY KEY,
-        title           VARCHAR(64) NULL,
+        title           VARCHAR(64) NOT NULL,
         body            VARCHAR(64) NULL,
-	    created_by      VARCHAR(64) NULL,
-	    answer          INTEGER[] NOT NULL,
+	    created_by      VARCHAR(64) NOT NULL,
+	    answer          INTEGER[] NULL,
         created_at      TIMESTAMP NOT NULL DEFAULT now(),
         is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
 	    upvotes         BIGINT NOT NULL DEFAULT 0,
