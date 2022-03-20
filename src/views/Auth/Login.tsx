@@ -14,7 +14,6 @@ const LoginScreen: FunctionComponent<LoginScreenProps> = () => {
 
     const login = async () => {
         const success = await handleLogin(email, password);
-        console.log(success)
         if (!success) return;
         navigate("/");
     };

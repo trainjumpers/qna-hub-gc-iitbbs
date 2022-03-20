@@ -44,9 +44,12 @@ export const handleSignup = async (email: string, password: string) => {
             }
         );
         if (signupResponse.status === 200) {
+            cookies.set("access-token", signupResponse.data.access_token);
             toast("Successfully registered!");
+            return true;
         }
     } catch (e: any) {
         toast(e.response.data.message);
+        return false;
     }
 };

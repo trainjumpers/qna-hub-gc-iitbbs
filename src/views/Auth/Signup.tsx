@@ -2,12 +2,21 @@ import { FunctionComponent, useState } from "react";
 import { Button, Card, Container, Form } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import { handleSignup } from "../../api/auth";
+import { useNavigate } from "react-router-dom";
 
 interface SignUpScreenProps {}
 
 const SignUpScreen: FunctionComponent<SignUpScreenProps> = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
+
+    let navigate = useNavigate();
+
+    const signup = async () => {
+        const success = await handleSignup(email, password);
+        if (!success) return;
+        navigate("/");
+    };
 
     return (
         <Container className="mt-5">
@@ -33,13 +42,7 @@ const SignUpScreen: FunctionComponent<SignUpScreenProps> = () => {
                                 onChange={(e) => setPassword(e.target.value)}
                             />
                         </Form.Group>
-                        <Button
-                            variant="primary"
-                            onClick={() => {
-                                console.log(email, password)
-                                handleSignup(email, password);
-                            }}
-                        >
+                        <Button variant="primary" onClick={signup}>
                             Signup
                         </Button>
                     </Form>

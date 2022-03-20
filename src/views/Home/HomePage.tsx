@@ -1,15 +1,20 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useEffect } from "react";
 import { Button } from "react-bootstrap";
-import { createQuestion } from "../../api/question";
+import { createQuestion, fetchQuestions } from "../../api/question";
 import CardComponent from "../../components/Card";
 
 interface HomePageProps {}
 
 const HomePage: FunctionComponent<HomePageProps> = () => {
 
+    useEffect(() => {
+      fetchQuestions();
+    }, [])
+    
+
     const handleCreateQuestion = () => {
         console.log("Create Question");
-        createQuestion("Test Question", "Test Body", "Test User");
+        createQuestion("Test Question", "Test Body");
     }
 
     return (
