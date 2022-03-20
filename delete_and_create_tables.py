@@ -30,8 +30,8 @@ async def create_question_table(connection):
 	    answer          INTEGER[] NOT NULL,
         created_at      TIMESTAMP NOT NULL DEFAULT now(),
         is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
-	    upvotes         BIGINT 0,
-	    downvotes       BIGINT 0
+	    upvotes         BIGINT NOT NULL DEFAULT 0,
+	    downvotes       BIGINT NOT NULL DEFAULT 0
     );"""
 
     print(f"Executing query: {query}")
@@ -40,15 +40,15 @@ async def create_question_table(connection):
 
 
 async def create_reply_table(connection):
-    query = f"""CREATE TABLE {schema_name}.question (
+    query = f"""CREATE TABLE {schema_name}.reply (
         id              SERIAL PRIMARY KEY,
         body            VARCHAR(64) NULL,
 	    created_by      VARCHAR(64) NULL,
 	    question_id     INTEGER NOT NULL,
         created_at      TIMESTAMP NOT NULL DEFAULT now(),
         is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
-	    upvotes         BIGINT 0,
-	    downvotes       BIGINT 0
+	    upvotes         BIGINT NOT NULL DEFAULT 0,
+	    downvotes       BIGINT NOT NULL DEFAULT 0
     );"""
 
     print(f"Executing query: {query}")
@@ -96,6 +96,7 @@ async def rebuild_schema():
     print(f"Recreating all tables in schema: {schema_name}")
     await create_user_table(connection)
     await create_question_table(connection)
+    await create_reply_table(connection)
 
     await connection.close()
 
