@@ -22,6 +22,23 @@ async def drop_all_tables(connection):
     await connection.execute(query)
 
 
+async def create_question_table(connection):
+    query = f"""CREATE TABLE {schema_name}.question (
+        id              SERIAL PRIMARY KEY,
+        body            VARCHAR(64) NULL,
+	    created_by      VARCHAR(64) NULL,
+	    answer          JSON NULL,
+        created_at      TIMESTAMP NOT NULL DEFAULT now(),
+        is_blacklisted  BOOLEAN NOT NULL DEFAULT false,
+	    upvotes         BIGINT 0,
+	    downvotes       BIGINT 0
+    );"""
+
+    print(f"Executing query: {query}")
+    result = await connection.execute(query)
+    print("Result", result)
+
+
 async def create_user_table(connection):
     query = f"""CREATE TABLE {schema_name}.user (
         id              SERIAL PRIMARY KEY,
@@ -61,15 +78,15 @@ async def rebuild_schema():
 
     print(f"Recreating all tables in schema: {schema_name}")
     await create_user_table(connection)
+    await create_question_table(connection)
 
     await connection.close()
 
 
-if __name__ == '__main__':
-    load_dotenv()
+load_dotenv()
 
-    host_name = os.environ.get('DB_HOST')
-    db_name = os.environ.get('DB_NAME')
-    schema_name = os.environ.get('DB_SCHEMA')
+host_name = os.environ.get('DB_HOST')
+db_name = os.environ.get('DB_NAME')
+schema_name = os.environ.get('DB_SCHEMA')
 
-    asyncio.get_event_loop().run_until_complete(rebuild_schema())
+asyncio.get_event_loop().run_until_complete(rebuild_schema())
