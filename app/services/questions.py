@@ -28,8 +28,8 @@ class QuestionService:
         """
 
         logger.info(f"Creating new question: {question_input.json()}")
-        query = f"INSERT INTO {self.schema}.question (question) VALUES ($1,$2) RETURNING *;"
-        params: Tuple[str, str] = (question_input.body, email)
+        query = f"INSERT INTO {self.schema}.question (title, body, created_by) VALUES ($1,$2,$3) RETURNING *;"
+        params: Tuple[str, str, str] = (question_input.title, question_input.body, email)
         async with self.pool.acquire() as connection:
             async with connection.transaction():
                 logger.info(f"Acquired connection and opened transaction to insert new question via query: {query}")

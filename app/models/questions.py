@@ -6,6 +6,7 @@ from pydantic import BaseModel, Field, Json
 
 class Question(BaseModel):
     id: int = Field(..., description="Primary key - integer id of the user")
+    title: str = Field(..., description="Title of the question")
     body: str = Field(..., description="Question of the user")
     created_by: str = Field(None, description="the creator of the question")
     created_at: datetime = Field(..., description="Datetime when the user submitted the question")
