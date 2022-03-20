@@ -6,10 +6,8 @@ from jwt import ExpiredSignatureError
 
 from app.exceptions.client_request import UserUnauthorizedException
 from app.models.users import User
-from app.models.users import Question
 
 from app.services.users import UserService
-from app.services.questions import QuestionService
 from app.utils.jwt import jwt_decode_token_to_user
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/users/login")
