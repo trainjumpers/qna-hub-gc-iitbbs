@@ -1,28 +1,22 @@
-import json
 import traceback
 
 from fastapi import APIRouter, Depends, status
-from fastapi.security import OAuth2PasswordRequestForm
-from app.Question_dependency import get_all_question,get_user_question
-from app.jwt_dependency import get_current_user
+from app.Question_dependency import get_all_question, get_user_question
+from app.controllers.users import get_user
 from app.entities.users import *
 from app.entities.questions import QuestionInput
 from app.entities.errors import ClientError, APIError
-from app.exceptions.client_request import UserUnauthorizedException
 from app.models.users import User
 from app.models.questions import Question
-from app.services.users import UserService
 from app.services.questions import QuestionService
-from app.utils.jwt import jwt_encode_user_to_token
-from app.utils.password import verify_password
 from app.exceptions.api import APIException
 from app.utils.logging import logger
 
 router: APIRouter = APIRouter()
 
 
-@router.get(path="/AllQuestion",
-            description="Fetch all the current questions",
+@router.get(path="",
+            description="Fetch all the questions",
             status_code=status.HTTP_200_OK,
             response_model=Question,
             responses={
@@ -41,7 +35,7 @@ async def get_all_questions(question: list[Question] = Depends(get_all_question)
 
 
 @router.get(path="/UserQuestion",
-            description="Fetch all the user's current questions",
+            description="Fetch all the questions created by a user",
             status_code=status.HTTP_200_OK,
             response_model=Question,
             responses={
@@ -59,7 +53,24 @@ async def get_question(question: list[Question] = Depends(get_user_question)):
     return question
 
 
-@router.post(path="/Question",
+@router.delete(path="/{question_id}",
+               description="Delete the question",
+               status_code=status.HTTP_200_OK,
+               response_model=Question,
+               responses={status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                   "model": APIError
+               }})
+async def ask(question_id: int, user: User = Depends(get_user)):
+    logger.info(f"Received question request with question id: {question_id}")
+    try:
+        question: Question = await QuestionService().delete_question(question_id)
+        logger.info(f"Question created successfully")
+        return question
+    except Exception:
+        raise APIException(trace=traceback.format_exc(), body=question_id)
+
+
+@router.post(path="",
              description="Post a question",
              status_code=status.HTTP_201_CREATED,
              response_model=Question,
