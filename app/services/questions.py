@@ -4,13 +4,10 @@ from typing import List, Tuple, Optional
 from asyncpg import Pool, Record
 
 from app.database import DatabaseConnectionPool
-from app.entities.users import SignupInput
-from app.exceptions.client_request import ResourceNotFoundException, UserNotFoundException
-from app.models.users import User
-from app.entities.users import QuestionInput
+from app.exceptions.client_request import ResourceNotFoundException
+from app.entities.questions import QuestionInput
 from app.models.questions import Question
 from app.utils.database import deserialize_records
-from app.utils.password import get_password_hash
 from app.utils.logging import logger
 
 

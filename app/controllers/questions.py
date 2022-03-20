@@ -2,7 +2,6 @@ import asyncio
 import traceback
 
 from fastapi import APIRouter, Depends, status
-from app.Question_dependency import get_all_question, get_user_question
 from app.controllers.users import get_user
 from app.entities.users import *
 from app.entities.questions import QuestionInput
@@ -32,8 +31,9 @@ router: APIRouter = APIRouter()
                     "model": APIError
                 }
             })
-async def get_all_questions(question: list[Question] = Depends(get_all_question)):
-    return question
+async def get_all_questions(user: User = Depends(get_user)):
+    questions: list[Question] = await QuestionService().fetch_all_question()
+    return questions
 
 
 @router.get(path="/UserQuestion",
@@ -51,8 +51,9 @@ async def get_all_questions(question: list[Question] = Depends(get_all_question)
                     "model": APIError
                 }
             })
-async def get_question(question: list[Question] = Depends(get_user_question)):
-    return question
+async def get_question(user: User = Depends(get_user)):
+    questions: list[Question] = await QuestionService().fetch_user_question(user.email)
+    return questions
 
 
 @router.delete(path="/{question_id}",
