@@ -1,5 +1,6 @@
 import asyncio
 import traceback
+from typing import List
 
 from fastapi import APIRouter, Depends, status
 from app.controllers.users import get_user
@@ -19,7 +20,7 @@ router: APIRouter = APIRouter()
 @router.get(path="/{question_id}",
             description="Fetch all the replies",
             status_code=status.HTTP_200_OK,
-            response_model=Reply,
+            response_model=List[Reply],
             responses={
                 status.HTTP_401_UNAUTHORIZED: {
                     "model": ClientError
