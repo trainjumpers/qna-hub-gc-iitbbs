@@ -1,6 +1,5 @@
-from ctypes import Union
 import os
-from typing import Any, Dict, List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional, Union
 
 from asyncpg import Pool, Record
 
