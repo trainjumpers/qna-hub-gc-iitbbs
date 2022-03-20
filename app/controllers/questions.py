@@ -5,7 +5,7 @@ from typing import List
 from fastapi import APIRouter, Depends, status
 from app.controllers.users import get_user
 from app.entities.users import *
-from app.entities.questions import QuestionInput
+from app.entities.questions import PatchQuestionInput, QuestionInput
 from app.entities.errors import ClientError, APIError
 from app.models.users import User
 from app.models.questions import Question
@@ -91,3 +91,33 @@ async def create_question(question_input: QuestionInput, user: User = Depends(ge
         return question
     except Exception:
         raise APIException(trace=traceback.format_exc(), body=question_input.json())
+
+
+@router.patch(path="/{question_id}",
+              description="Update information about the user",
+              status_code=status.HTTP_200_OK,
+              response_model=User,
+              response_model_exclude={'hashed_password'},
+              responses={
+                  status.HTTP_401_UNAUTHORIZED: {
+                      "model": ClientError
+                  },
+                  status.HTTP_500_INTERNAL_SERVER_ERROR: {
+                      "model": APIError
+                  }
+              })
+async def patch_question(question_id: int, patch_question_input: PatchQuestionInput, user: User = Depends(get_user)):
+    logger.info(
+        f"Received request to update info for question: {question_id} with request body: {patch_question_input.json()}")
+
+    fields_to_update: dict = patch_question_input.dict(exclude_none=True)
+    if not fields_to_update:
+        logger.info(f"Nothing to update for question: {question_id}")
+        return user
+
+    try:
+        question: Question = await QuestionService().update_fields(question_id, fields_to_update)
+        logger.info(f"Successfully updated user info for user: {question.json()}")
+        return question
+    except Exception:
+        raise APIException(trace=traceback.format_exc(), body=patch_question_input.dict())

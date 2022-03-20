@@ -1,5 +1,6 @@
+from ctypes import Union
 import os
-from typing import List, Tuple, Optional
+from typing import Any, Dict, List, Tuple, Optional
 
 from asyncpg import Pool, Record
 
@@ -85,3 +86,27 @@ class QuestionService:
             raise ResourceNotFoundException("Question with id {id} not found")
 
         return question_record
+
+    async def update_fields(self, user_id: int, fields: Dict[str, Union[int, str]]) -> Question:
+        """Updates user with id as user_id with the provided fields.
+        Args:
+            user_id : id of the user.
+            fields : a dictionary of fields with key as field name and value as attribute value
+        Returns:
+            user: pydantic model object of the updated user. See app.models.user.User
+        """
+
+        logger.info(f"Updating user fields: {fields}")
+        params: List[Any] = [val for val in fields.values()]
+        update_clause_items: List[str] = list(map(lambda x: f"{x[1]} = ${x[0] + 1}", enumerate(fields.keys())))
+        update_clause: str = ", ".join(update_clause_items)
+        query = f"UPDATE {self.schema}.user SET {update_clause} WHERE id = {user_id} RETURNING *;"
+        logger.info(f"Updating with following query: {query}")
+
+        async with self.pool.acquire() as connection:
+            async with connection.transaction():
+                logger.info(f"Acquired connection and opened transaction to patch user via query: {query}")
+                question_record: Record = await connection.fetchrow(query, *params)
+
+        logger.info(f"Successfully updated fields : {fields} for user: {user_id}")
+        return deserialize_records(question_record, Question)
