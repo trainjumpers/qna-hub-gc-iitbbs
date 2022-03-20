@@ -1,9 +1,4 @@
-import re
-from turtle import title
-
-from pydantic import BaseModel, Field, validator
-
-from app.constants import EMAIL_REGEX, PASSWORD_REGEX
+from pydantic import BaseModel, Field
 
 
 class QuestionInput(BaseModel):
