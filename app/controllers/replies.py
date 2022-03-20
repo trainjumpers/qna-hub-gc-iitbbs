@@ -46,7 +46,7 @@ async def get_all_replies(question_id: int, user: User = Depends(get_user)):
 async def delete_reply(reply_id: int, user: User = Depends(get_user)):
     logger.info(f"Received question request with reply id: {reply_id}")
     validator: ReplyVailidator = ReplyVailidator(reply_id)
-    asyncio.gather(validator.validate_reply_creator(user.id))
+    asyncio.gather(validator.validate_reply_creator(user.email))
     try:
         reply: Reply = await ReplyService().delete_reply(reply_id)
         logger.info(f"reply created successfully")

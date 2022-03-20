@@ -66,7 +66,7 @@ async def get_question(user: User = Depends(get_user)):
 async def delete_question(question_id: int, user: User = Depends(get_user)):
     logger.info(f"Received question request with question id: {question_id}")
     validator: QuestionValidator = QuestionValidator(question_id)
-    asyncio.gather(validator.validate_question_creator(user.id))
+    asyncio.gather(validator.validate_question_creator(user.email))
     try:
         question: Question = await QuestionService().delete_question(question_id)
         logger.info(f"Question created successfully")
