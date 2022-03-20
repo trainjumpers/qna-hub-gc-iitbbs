@@ -1,3 +1,4 @@
+import asyncio
 import traceback
 
 from fastapi import APIRouter, Depends, status
@@ -11,6 +12,7 @@ from app.models.questions import Question
 from app.services.questions import QuestionService
 from app.exceptions.api import APIException
 from app.utils.logging import logger
+from app.validators.question import QuestionValidator
 
 router: APIRouter = APIRouter()
 
@@ -62,6 +64,8 @@ async def get_question(question: list[Question] = Depends(get_user_question)):
                }})
 async def ask(question_id: int, user: User = Depends(get_user)):
     logger.info(f"Received question request with question id: {question_id}")
+    validator: QuestionValidator = QuestionValidator(question_id)
+    asyncio.gather(validator.validate_question_creator(user.id))
     try:
         question: Question = await QuestionService().delete_question(question_id)
         logger.info(f"Question created successfully")

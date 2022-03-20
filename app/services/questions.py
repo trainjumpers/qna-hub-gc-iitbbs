@@ -5,7 +5,7 @@ from asyncpg import Pool, Record
 
 from app.database import DatabaseConnectionPool
 from app.entities.users import SignupInput
-from app.exceptions.client_request import UserNotFoundException
+from app.exceptions.client_request import ResourceNotFoundException, UserNotFoundException
 from app.models.users import User
 from app.entities.users import QuestionInput
 from app.models.questions import Question
@@ -71,5 +71,19 @@ class QuestionService:
             async with connection.transaction():
                 logger.info(f"Acquired connection and opened transaction to delete question via query: {query}")
                 question_record: Optional[Record] = await connection.fetchrow(query, question_id)
+
+        return question_record
+
+    async def fetch_question_with_id(self, id: int) -> Question:
+
+        query = f"SELECT * FROM {self.schema}.question where id=$1"
+
+        async with self.pool.acquire() as connection:
+            async with connection.transaction():
+                logger.info(f"Acquired connection and opened transaction to fetch user questions via query: {query}")
+                question_record: Optional[Record] = await connection.fetch(query, id)
+
+        if not question_record:
+            raise ResourceNotFoundException("Question with id {id} not found")
 
         return question_record
