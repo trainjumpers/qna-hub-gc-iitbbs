@@ -21,12 +21,13 @@ export const createQuestion = async (title: string, body: string) => {
                 },
             }
         );
-        toast("Successfully logged in!");
-        if (createQuestionResponse.status === 200) {
+        if (createQuestionResponse.status === 201) {
+            console.log(createQuestionResponse.data)
             return createQuestionResponse.data;
         }
     } catch (e: any) {
         toast(e.response.data.message);
+        return;
     }
 };
 
@@ -43,9 +44,10 @@ export const fetchQuestions = async () => {
             }
         );
         if (fetchQuestionsResponse.status === 200) {
-            console.log(fetchQuestionsResponse.data);
+            return fetchQuestionsResponse.data;
         }
     } catch (e: any) {
         toast(e.response.data.message);
+        return;
     }
 };

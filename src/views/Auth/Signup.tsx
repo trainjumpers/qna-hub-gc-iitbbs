@@ -10,7 +10,7 @@ const SignUpScreen: FunctionComponent<SignUpScreenProps> = () => {
     const [email, setEmail] = useState<string>("");
     const [password, setPassword] = useState<string>("");
 
-    let navigate = useNavigate();
+    const navigate = useNavigate();
 
     const signup = async () => {
         const success = await handleSignup(email, password);
