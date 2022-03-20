@@ -45,9 +45,10 @@ class QuestionService:
         async with self.pool.acquire() as connection:
             async with connection.transaction():
                 logger.info(f"Acquired connection and opened transaction to fetch all questions via query: {query}")
-                question_record: Optional[Record] = await connection.fetch(query)
+                question_record: List[Record] = await connection.fetch(query)
 
-        return question_record
+        logger.info("Successfully fetched data from the database")
+        return deserialize_records(question_record, Question)
 
     async def fetch_user_question(self, email: str) -> List[Question]:
 
@@ -58,7 +59,7 @@ class QuestionService:
                 logger.info(f"Acquired connection and opened transaction to fetch user questions via query: {query}")
                 question_record: Optional[Record] = await connection.fetch(query, email)
 
-        return question_record
+        return deserialize_records(question_record, Question)
 
     async def delete_quesiton(self, question_id: int) -> Question:
 
